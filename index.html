@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مصرف حجا الابتكاري</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            margin: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .hija-gradient {
+            background: linear-gradient(135deg, #6d28d9 0%, #4338ca 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(109, 40, 217, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .hija-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hija-btn:active {
+            transform: scale(0.95);
+        }
+
+        .game-card {
+            aspect-ratio: 1.58 / 1;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .game-card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: white;
+            border: 2px solid #6d28d9;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        /* قفص التميز */
+        .cage-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .cage-box {
+            background: #e2e8f0;
+            border: 2px solid #cbd5e1;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .cage-box.revealed {
+            background: #fff;
+            border-color: #6d28d9;
+            box-shadow: inset 0 0 10px rgba(109, 40, 217, 0.1);
+        }
+        .cage-box i {
+            color: #94a3b8;
+        }
+        .cage-box.revealed i {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="min-h-screen pb-20">
+        <header class="hija-gradient text-white p-10 rounded-b-[50px] shadow-2xl text-center relative overflow-hidden">
+            <div class="relative z-10">
+                <img src="شعار حجا.png" alt="Logo" class="w-24 h-24 mx-auto rounded-full border-4 border-white shadow-xl mb-4 object-cover" onerror="this.src='شعار حجا.jpg'">
+                <h1 class="text-4xl font-black mb-2 tracking-tight">عالم حجا</h1>
+                <p class="text-purple-100 font-bold text-lg">مرحباً بكم في عالم المبتكرين الغامر</p>
+            </div>
+            <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+        </header>
+
+        <main class="max-w-4xl mx-auto p-6 -mt-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- عملة حجا -->
+                <div onclick="openModal('currency-modal')" class="glass-card p-8 rounded-[35px] hija-btn flex flex-col items-center text-center cursor-pointer hover:border-purple-300">
+                    <img src="عملة حجا.png" alt="عملة حجا الابتكارية" class="h-32 w-auto object-contain mb-4 rounded-xl drop-shadow-lg transition-transform hover:scale-105" onerror="this.src='عملة حجا.jpg'">
+                    <h3 class="font-black text-xl text-slate-800">عملة حجا الابتكارية</h3>
+                </div>
+
+                <!-- سند قرض -->
+                <div onclick="openModal('loan-modal')" class="glass-card p-8 rounded-[35px] hija-btn flex flex-col items-center text-center cursor-pointer hover:border-orange-300">
+                    <img src="شعار حجا.png" alt="سند قرض ابتكاري" class="h-32 w-32 object-cover mb-4 rounded-full drop-shadow-lg border-4 border-white transition-transform hover:scale-105" onerror="this.src='شعار حجا.jpg'">
+                    <h3 class="font-black text-xl text-slate-800">سند قرض ابتكاري</h3>
+                </div>
+
+                <!-- كروت حجا -->
+                <div onclick="openModal('cards-modal')" class="glass-card p-8 rounded-[35px] hija-btn flex flex-col items-center text-center cursor-pointer hover:border-purple-400">
+                    <img src="كروت حجا.png" alt="كروت حجا الابتكارية" class="h-32 w-auto object-contain mb-4 rounded-xl drop-shadow-lg transition-transform hover:scale-105" onerror="this.src='كروت حجا.jpg'">
+                    <h3 class="font-black text-xl text-slate-800">كروت حجا الابتكارية</h3>
+                </div>
+
+                <!-- دليل حجا AI -->
+                <div onclick="openModal('guide-modal')" class="glass-card p-8 rounded-[35px] hija-btn flex flex-col items-center text-center cursor-pointer border-2 border-purple-500 shadow-purple-100 shadow-2xl">
+                    <img src="عالم حجا.png" alt="دليل حجا AI" class="h-32 w-full max-w-[220px] object-cover mb-4 rounded-2xl drop-shadow-lg border-2 border-slate-200 transition-transform hover:scale-105" onerror="this.src='عالم حجا.jpg'">
+                    <h3 class="font-black text-xl text-slate-800">دليل حجا AI</h3>
+                </div>
+
+                <!-- قوانين عالم حجا -->
+                <div onclick="openModal('laws-modal')" class="glass-card p-6 rounded-[30px] hija-btn flex flex-col items-center text-center cursor-pointer col-span-full border-dashed border-2 border-slate-300">
+                    <div class="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center mb-2">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-700">قوانين عالم حجا الابتكاري</h3>
+                </div>
+            </div>
+        </main>
+
+        <!-- صندوق المحادثة -->
+        <div class="max-w-4xl mx-auto px-6 mt-4">
+            <div class="bg-white rounded-[35px] p-8 shadow-2xl border border-blue-50">
+                <div class="flex items-center gap-4 mb-6">
+                    <img src="شعار حجا.png" alt="حجا AI" class="w-14 h-14 rounded-full shadow-lg border-2 border-blue-100 object-cover" onerror="this.src='شعار حجا.jpg'">
+                    <div>
+                        <h3 class="font-black text-blue-900 leading-tight">صندوق محادثة حجا AI الابتكاري</h3>
+                        <p class="text-xs text-blue-400 font-bold">متصل الآن</p>
+                    </div>
+                </div>
+                <div class="h-40 overflow-y-auto bg-slate-50 rounded-2xl p-4 mb-4 text-slate-600 border border-slate-100 text-sm leading-relaxed" id="chat-box">
+                    أهلاً بك في عالم حجا، عالم المبتكرين الغامر! أنا مساعدك الذكي، كيف يمكنني إرشادك اليوم؟
+                </div>
+                <div class="flex gap-3">
+                    <input type="text" placeholder="اطلب فكرة إبداعية من حجا..." class="flex-1 bg-slate-100 rounded-2xl px-6 py-4 outline-none border-2 border-transparent focus:border-blue-500 font-bold text-slate-700 transition-all">
+                    <button class="bg-blue-600 text-white px-6 rounded-2xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all"><i data-lucide="send" class="w-6 h-6"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- النافذة: عملة حجا -->
+    <div id="currency-modal" class="modal">
+        <div class="bg-white rounded-[45px] w-full max-w-md p-10 relative">
+            <button onclick="closeAllModals()" class="absolute top-8 left-8 text-slate-300 hover:text-slate-600 transition-colors"><i data-lucide="x-circle" class="w-8 h-8"></i></button>
+            <h2 class="text-2xl font-black mb-8 text-center text-slate-800">إصدار عملة حجا</h2>
+            <div class="space-y-5">
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-400 mr-2">اسم الفريق</label>
+                    <input type="text" id="cur-team" class="w-full p-5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:border-yellow-400 outline-none font-black text-lg">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-400 mr-2">عدد العملات</label>
+                    <input type="number" id="cur-amount" class="w-full p-5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:border-yellow-400 outline-none font-black text-lg">
+                </div>
+                <button onclick="printCurrency()" class="w-full bg-yellow-500 text-white py-5 rounded-[25px] font-black text-xl shadow-xl shadow-yellow-100 hover:bg-yellow-600 transition-all flex items-center justify-center gap-3">
+                    <i data-lucide="printer"></i> طباعة العملة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- النافذة: سند قرض -->
+    <div id="loan-modal" class="modal">
+        <div class="bg-white rounded-[45px] w-full max-w-lg p-10 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeAllModals()" class="absolute top-8 left-8 text-slate-300"><i data-lucide="x-circle" class="w-8 h-8"></i></button>
+            <h2 class="text-2xl font-black mb-8 text-center">إنشاء سند قرض ابتكاري</h2>
+            <div class="space-y-4">
+                <input type="text" id="loan-borrower" placeholder="اسم الفريق المقترض" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold">
+                <input type="text" id="loan-lender" placeholder="اسم الفريق المقرض" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold">
+                <input type="number" id="loan-val" placeholder="مبلغ القرض الابتكاري" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold">
+                <input type="text" id="loan-purpose" placeholder="غرض القرض الابتكاري" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold">
+                <input type="text" id="loan-due" placeholder="تاريخ السداد المستحق" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold">
+                <button onclick="printLoan()" class="w-full bg-orange-600 text-white py-5 rounded-[25px] font-black text-xl shadow-xl shadow-orange-100 flex items-center justify-center gap-3 mt-4">
+                    <i data-lucide="printer"></i> اعتماد السند
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- النافذة: كروت حجا -->
+    <div id="cards-modal" class="modal">
+        <div class="bg-white rounded-[45px] w-full max-w-6xl p-10 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeAllModals()" class="absolute top-8 left-8 text-slate-300"><i data-lucide="x-circle" class="w-8 h-8"></i></button>
+            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+                <h2 class="text-3xl font-black text-slate-800">كروت حجا الابتكارية</h2>
+                <div class="flex gap-3">
+                    <button onclick="shuffleCards()" class="bg-purple-600 text-white px-8 py-3 rounded-full font-black flex items-center gap-2 shadow-lg shadow-purple-100">
+                        <i data-lucide="shuffle"></i> خلط الكروت
+                    </button>
+                </div>
+            </div>
+            <div id="cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- المربعات تظهر هنا -->
+            </div>
+        </div>
+    </div>
+
+    <!-- النافذة: دليل حجا AI -->
+    <div id="guide-modal" class="modal">
+        <div class="bg-slate-50 rounded-[50px] w-full max-w-5xl p-10 relative max-h-[95vh] overflow-y-auto">
+            <button onclick="closeAllModals()" class="absolute top-8 left-8 text-slate-300"><i data-lucide="x-circle" class="w-8 h-8"></i></button>
+            
+            <div id="guide-intro" class="text-center">
+                <div class="relative w-full max-w-4xl mx-auto mb-10">
+                    <img src="عالم حجا.png" class="w-full h-auto max-h-[450px] object-cover rounded-[40px] shadow-2xl border-4 border-white" onerror="this.src='عالم حجا.jpg'">
+                    <div class="absolute -bottom-6 -right-6 bg-blue-600 text-white p-5 rounded-3xl shadow-xl">
+                        <i data-lucide="sparkles" class="w-8 h-8"></i>
+                    </div>
+                </div>
+                
+                <h2 class="text-4xl font-black mb-6 text-slate-800 tracking-tight">دليل حجا الابتكاري</h2>
+                
+                <div class="bg-white p-8 rounded-[40px] border border-slate-200 text-right mb-10 shadow-sm">
+                    <h4 class="font-black text-blue-600 text-2xl mb-4">ما هو حجا؟</h4>
+                    <p class="text-slate-600 leading-relaxed text-lg">
+                        حجا هو عقل اصطناعي يساعدك في الابتكار وفقاً لعقليتي: <span class="font-bold text-slate-800">الهداف (الصياد)</span> و <span class="font-bold text-slate-800">الحارس (الراعي)</span>. 
+                        ينمي الابتكار بتعزيز استعمال الحواس الخمس أثناء التحديات لتحفيز القدرات العقلية وابتكار الحلول الجديدة، ويعزز التعاطف في نفوس المبتكرين عبر السرد القصصي.
+                    </p>
+                    <div class="mt-6 pt-6 border-t border-slate-50 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-500">
+                        <p><i data-lucide="hash" class="inline w-4 h-4 ml-1"></i> <b>معنى حجا:</b> العقل، ومنه اشتقت الأُحجية.</p>
+                        <p><i data-lucide="pie-chart" class="inline w-4 h-4 ml-1"></i> <b>مبدأ باريتو:</b> 20% ميسر - 80% تفاعل بشري.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-10">
+                    <button onclick="playAudio('شارة حجا.mp3')" class="bg-purple-600 text-white p-6 rounded-[30px] font-black flex flex-col items-center gap-3 shadow-lg shadow-purple-100 hover:scale-105 transition-transform">
+                        <i data-lucide="play-circle" class="w-10 h-10"></i> شارة حجا
+                    </button>
+                    <button onclick="playAudio('صوت حجا.mp3')" class="bg-blue-600 text-white p-6 rounded-[30px] font-black flex flex-col items-center gap-3 shadow-lg shadow-blue-100 hover:scale-105 transition-transform">
+                        <i data-lucide="volume-2" class="w-10 h-10"></i> صوت حجا
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <button onclick="showGuideSection('hunter')" class="bg-white p-8 rounded-[30px] shadow-sm border-2 border-transparent hover:border-blue-500 font-black text-blue-800 text-xl transition-all">عقلية الهداف</button>
+                    <button onclick="showGuideSection('guardian')" class="bg-white p-8 rounded-[30px] shadow-sm border-2 border-transparent hover:border-green-500 font-black text-green-800 text-xl transition-all">عقلية الحارس</button>
+                    <button onclick="showGuideSection('elements')" class="bg-white p-8 rounded-[30px] shadow-sm border-2 border-transparent hover:border-orange-500 font-black text-orange-800 text-xl transition-all">العناصر التحفيزية</button>
+                </div>
+            </div>
+
+            <div id="guide-content" class="hidden">
+                <button onclick="backToGuideIntro()" class="mb-8 text-blue-600 font-black flex items-center gap-2 hover:bg-blue-50 px-4 py-2 rounded-xl transition-all w-fit"><i data-lucide="arrow-right" class="w-6 h-6"></i> العودة للرئيسية</button>
+                <div id="section-detail"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- النافذة: القوانين -->
+    <div id="laws-modal" class="modal">
+        <div class="bg-white rounded-[50px] w-full max-w-2xl p-12 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeAllModals()" class="absolute top-10 left-10 text-slate-300"><i data-lucide="x-circle" class="w-8 h-8"></i></button>
+            <h2 class="text-3xl font-black mb-10 border-b pb-6 text-slate-800">قوانين عالم حجا الابتكاري</h2>
+            <div class="space-y-6">
+                <div class="p-6 bg-slate-50 rounded-3xl border-r-8 border-purple-600">
+                    <p class="font-bold text-slate-700 leading-loose">1- يحق لكل فريق في كل يوم سحب كرت ابتكاري واحد وتفعيله مرة واحدة في اليوم نفسه.</p>
+                </div>
+                <div class="p-6 bg-slate-50 rounded-3xl border-r-8 border-blue-600">
+                    <p class="font-bold text-slate-700 leading-loose">2- لغز محاصر في قفص التميز: هناك 100 عملة مرصودة، يمكن الحصول عليها كاملة عند الجواب الصحيح، وتُخصم 50% عند طلب تلميح.</p>
+                </div>
+                <div class="p-6 bg-slate-50 rounded-3xl border-r-8 border-green-600">
+                    <p class="font-bold text-slate-700 leading-loose">3- يمكن لكل فريق كسر وديعة ابتكارية مقابل العملات المرصودة لكل وديعة.</p>
+                </div>
+                <div class="p-6 bg-slate-50 rounded-3xl border-r-8 border-orange-600">
+                    <p class="font-bold text-slate-700 leading-loose">4- أوامر كروت حجا نافذة ويلزم على الجميع تنفيذها فوراً.</p>
+                </div>
+                <div class="p-6 bg-slate-50 rounded-3xl border-r-8 border-yellow-600">
+                    <p class="font-bold text-slate-700 leading-loose">5- القرض الابتكاري يكون بالتراضي الكامل بين الفريقين.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const cardTemplates = [
+            { id: 1, title: "10 بالإشارة", desc: "يحق للفريق إلزام الفرق الأخرى بالتواصل الإشاري مدة 10 دقائق." },
+            { id: 2, title: "وقت يشترى بالمال", desc: "تمديد وقت أحد التمارين 15 دقيقة مقابل حسم 15 عملة ابتكارية من رصيدكم." },
+            { id: 3, title: "سُلفة ابتكارية", desc: "يتيح لكم استعارة أداة من فريق آخر -باستثناء الودائع- أو طلب فكرة إبداعية." },
+            { id: 4, title: "مساعدة حجا", desc: "حق الاستعانة بحجا أو ميسر بشري لمدة 10 دقائق." },
+            { id: 5, title: "10 عملات حجا", desc: "حق الحصول على 10 عملات من عملات حجا مباشرة." },
+            { id: 6, title: "5 عملات حجا", desc: "حق الحصول على 5 عملات من عملات حجا مباشرة." },
+            { id: 7, title: "حسم 50% من التكلفة", desc: "حسم 50% من تكلفة وديعة ابتكارية واحدة مع سداد البقية." },
+            { id: 8, title: "شركاء في الابتكار", desc: "حق الاستعانة بفريق لمشاركتكم دفع قيمة وديعة ومشاركتكم استعمالها." },
+            { id: 9, title: "أداة ابتكارية ملغاة", desc: "حق إلغاء أداة ابتكار لفريق أو منع وديعة يوماً كاملاً عن الجميع." },
+            { id: 10, title: "ماستر كي الودائع", desc: "حق كسر إحدى الودائع الابتكارية دون دفع قيمتها مرة واحدة." },
+            { id: 11, title: "مقايضة ابتكارية", desc: "يحق لكم التبديل بين الودائع بينكم وبين فريق آخر بشرط استعمالها مسبقاً." },
+            { id: 12, title: "كفيل المبتكرين الغارم", desc: "يلزمكم الكرت بكفالة فريق وسداد قروضهم الابتكارية اليوم." },
+            { id: 13, title: "بنك المبتكرين التعاوني", desc: "تعاون مع أحد الفرق 5 دقائق لتكسب 10 عملات لفريقك." },
+            { id: 14, title: "سند قرض ابتكاري", desc: "يلزم أحد الفرق بإقراضكم مبلغ وديعة مقابل السداد غداً." }
+        ];
+
+        let printedCards = new Set();
+        let currentScore = 100;
+        let timeLeft = 300;
+        let timerInterval = null;
+
+        function shuffleCards() {
+            printedCards.clear();
+            const grid = document.getElementById('cards-grid');
+            grid.innerHTML = '';
+            const shuffled = [...cardTemplates].sort(() => Math.random() - 0.5);
+            
+            shuffled.forEach(card => {
+                const el = document.createElement('div');
+                el.className = 'game-card';
+                el.innerHTML = `
+                    <div class="card-inner" onclick="this.parentElement.classList.toggle('flipped')">
+                        <div class="card-front">
+                            <img src="كروت حجا.png" class="w-full h-full object-cover" onerror="this.src='كروت حجا.jpg'">
+                        </div>
+                        <div class="card-back">
+                            <h4 class="font-black text-purple-700 text-xl mb-3">${card.title}</h4>
+                            <p class="text-sm text-slate-500 font-bold mb-6 px-4 leading-relaxed">${card.desc}</p>
+                            <button onclick="printGameCard(event, '${card.title}', '${card.desc}')" class="bg-purple-600 text-white px-6 py-3 rounded-xl text-sm font-black no-print hover:bg-purple-700 transition-all">طباعة السحب</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(el);
+            });
+        }
+
+        // --- دالة الطباعة الذكية (تضمن لك طباعة نظيفة ومستقلة) ---
+        function printContent(htmlContent) {
+            // إنشاء إطار مخفي
+            const printFrame = document.createElement('iframe');
+            printFrame.style.position = 'absolute';
+            printFrame.style.top = '-9999px';
+            document.body.appendChild(printFrame);
+
+            // تجهيز محتوى الإطار للطباعة
+            const frameDoc = printFrame.contentWindow.document;
+            frameDoc.open();
+            frameDoc.write(`
+                <html dir="rtl">
+                <head>
+                    <title>طباعة مستند حجا</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+                    <style>
+                        body { 
+                            font-family: 'Tajawal', sans-serif; 
+                            margin: 0; 
+                            padding: 0; 
+                            display: flex; 
+                            justify-content: center; 
+                            align-items: center; 
+                            min-height: 100vh; 
+                            background: white; 
+                        }
+                        @page { size: auto; margin: 0mm; }
+                    </style>
+                </head>
+                <body>
+                    ${htmlContent}
+                </body>
+                </html>
+            `);
+            frameDoc.close();
+
+            // إعطاء وقت قصير لتحميل الخطوط والصور ثم الطباعة
+            printFrame.onload = function() {
+                setTimeout(() => {
+                    printFrame.contentWindow.focus();
+                    printFrame.contentWindow.print();
+                    // إزالة الإطار بعد الطباعة
+                    setTimeout(() => { document.body.removeChild(printFrame); }, 1000);
+                }, 500); 
+            };
+        }
+
+        // --- تحديث دوال الطباعة لتستخدم الدالة الذكية الجديدة ---
+
+        function printGameCard(e, title, desc) {
+            e.stopPropagation();
+            if (printedCards.has(title)) {
+                alert("تم طباعة هذا الكرت بالفعل! لا يمكن سحب الكرت مرتين إلا بعد إعادة الخلط.");
+                return;
+            }
+            printedCards.add(title);
+            const content = `
+                <div style="padding:50px; border:15px solid #6d28d9; border-radius:40px; text-align:center; background:white; width:500px; margin:auto;">
+                    <img src="شعار حجا.jpg" style="width:100px; margin-bottom:30px;" onerror="this.style.display='none'">
+                    <h1 style="font-size:32px; color:#6d28d9; margin-bottom:10px; font-weight:900;">كرت حجا الابتكاري</h1>
+                    <div style="border:4px dashed #6d28d9; padding:40px; border-radius:30px; margin-top:20px;">
+                        <h2 style="font-size:40px; margin-bottom:20px; color:#1e293b;">${title}</h2>
+                        <p style="font-size:22px; color:#475569; line-height:1.5;">${desc}</p>
+                    </div>
+                    <p style="font-size:14px; margin-top:40px; color:#94a3b8;">* صالح للتفعيل لمرة واحدة في يوم السحب *</p>
+                </div>
+            `;
+            printContent(content);
+        }
+
+        function printCurrency() {
+            const team = document.getElementById('cur-team').value || 'فريق المبتكرين';
+            const amount = document.getElementById('cur-amount').value || '0';
+            const content = `
+                <div style="width:350px; padding:30px; border:3px solid #6d28d9; text-align:center; background:white; border-radius:20px; margin:auto;">
+                    <img src="شعار حجا.jpg" style="width:60px; margin-bottom:10px;" onerror="this.style.display='none'">
+                    <h3 style="margin:0; color:#6d28d9;">مصرف حجا الابتكاري</h3>
+                    <div style="margin:20px 0; border:2px solid #f1f5f9; padding:20px; border-radius:15px;">
+                        <img src="عملة حجا.jpg" style="width:100%; border-radius:10px; margin-bottom:15px;" onerror="this.style.display='none'">
+                        <p style="font-size:14px; color:#64748b; margin-bottom:5px;">قيمة العملة المسحوبة لـ:</p>
+                        <p style="font-size:20px; font-weight:900; margin-bottom:10px;">${team}</p>
+                        <h1 style="font-size:50px; margin:0; color:#ca8a04;">${amount}</h1>
+                        <p style="font-weight:bold; color:#ca8a04;">عملة حجا</p>
+                    </div>
+                    <p style="font-size:10px; color:#94a3b8;">إيصال سحب رقمي معتمد</p>
+                </div>
+            `;
+            printContent(content);
+        }
+
+        function printLoan() {
+            const content = `
+                <div style="width:800px; padding:60px; border:15px double #ea580c; background:white; position:relative; margin:auto;">
+                    <img src="شعار حجا.jpg" style="position:absolute; top:40px; left:40px; width:120px;" onerror="this.style.display='none'">
+                    <h1 style="text-align:center; font-size:54px; color:#ea580c; font-weight:900; margin-bottom:80px;">سند قرض ابتكاري</h1>
+                    <div style="font-size:28px; line-height:2; color:#1e293b;">
+                        أقر أنا فريق: <b style="border-bottom:2px solid #000; padding:0 20px;">${document.getElementById('loan-borrower').value}</b> <br>
+                        بأنني استلمت من فريق: <b style="border-bottom:2px solid #000; padding:0 20px;">${document.getElementById('loan-lender').value}</b> <br>
+                        قرضاً ابتكارياً قيمته: <b style="border-bottom:2px solid #000; padding:0 20px;">${document.getElementById('loan-val').value} عملة حجا</b> <br>
+                        وذلك لغرض: <b style="border-bottom:2px solid #000; padding:0 20px;">${document.getElementById('loan-purpose').value}</b> <br>
+                        على أن يتم رد القرض في موعد أقصاه: <b style="border-bottom:2px solid #000; padding:0 20px;">${document.getElementById('loan-due').value}</b>
+                    </div>
+                    <div style="margin-top:100px; display:flex; justify-content:space-between; font-size:24px;">
+                        <div style="text-align:center;">توقيع المقترض<br>..........................</div>
+                        <div style="text-align:center;">توقيع المقرض<br>..........................</div>
+                    </div>
+                    <div style="margin-top:60px; text-align:center; border-top:1px solid #eee; padding-top:20px;">
+                        <p style="font-size:16px; color:#94a3b8;">هذا السند ملزم قانونياً في عالم حجا الابتكاري</p>
+                    </div>
+                </div>
+            `;
+            printContent(content);
+        }
+
+        // -------------------------------------------------------------
+        // باقي الدوال (كما هي في كودك الأصلي بالضبط)
+        // -------------------------------------------------------------
+
+        function showGuideSection(type) {
+            document.getElementById('guide-intro').classList.add('hidden');
+            document.getElementById('guide-content').classList.remove('hidden');
+            const detail = document.getElementById('section-detail');
+            
+            if (type === 'hunter') {
+                detail.innerHTML = `
+                    <div class="bg-white p-10 rounded-[40px] shadow-sm border">
+                        <h3 class="text-3xl font-black text-blue-800 mb-8 flex items-center gap-3"><i data-lucide="target"></i> عقلية الهداف (الصياد)</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                            <div class="p-4 bg-blue-50 border border-blue-100 rounded-2xl text-center font-black text-blue-700">جــريء</div>
+                            <div class="p-4 bg-blue-50 border border-blue-100 rounded-2xl text-center font-black text-blue-700">مغــامـر</div>
+                            <div class="p-4 bg-blue-50 border border-blue-100 rounded-2xl text-center font-black text-blue-700">مـــبادر</div>
+                            <div class="p-4 bg-blue-50 border border-blue-100 rounded-2xl text-center font-black text-blue-700">مـــــبدع</div>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="p-6 bg-slate-50 rounded-3xl">
+                                <button onclick="toggleAccordion('acc-frn')" class="w-full text-right font-black text-xl flex justify-between items-center">إطار العيون الفرناسية <i data-lucide="eye"></i></button>
+                                <div id="acc-frn" class="hidden mt-6 space-y-4 text-slate-600">
+                                    <p class="font-bold text-blue-600">ماذا لو كنا ننظر إلى ما حولنا بعيون فرناسية؟</p>
+                                    <div class="bg-white p-5 rounded-2xl border">
+                                        <p><b>تحدي:</b> عجوز قعيد على الشاطئ. ماذا يمكن أن نبتكر بالصدف؟ (تجربة ريما آل يوسف لهيكل عظمي من الصدف)</p>
+                                    </div>
+                                    <div class="bg-white p-5 rounded-2xl border">
+                                        <p><b>تحدي:</b> أوراق الفيزالس وفرص ابتكار جديدة.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-6 bg-slate-50 rounded-3xl">
+                                <button onclick="toggleAccordion('acc-moon')" class="w-full text-right font-black text-xl flex justify-between items-center">على امتداد ضوء القمرة <i data-lucide="moon"></i></button>
+                                <div id="acc-moon" class="hidden mt-6 space-y-4 text-slate-600">
+                                    <p class="font-bold text-blue-600">كيف يقلب التفكير العكسي معادلة المنطق؟</p>
+                                    <div class="bg-white p-5 rounded-2xl border">
+                                        <p><b>تحدي نسيم الشمس البارد:</b> كيف نحول أشعة الشمس الحارة إلى مصدر هوائي بارد؟</p>
+                                    </div>
+                                    <div class="bg-white p-5 rounded-2xl border">
+                                        <p><b>تحدي سطح القمر:</b> ماذا لو كنا نزرع نخيلنا على سطح القمر؟</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'guardian') {
+                detail.innerHTML = `
+                    <div class="bg-white p-10 rounded-[40px] shadow-sm border">
+                        <h3 class="text-3xl font-black text-green-800 mb-8 flex items-center gap-3"><i data-lucide="shield-check"></i> عقلية الحارس (الراعي)</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                            <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-center font-black text-green-700">حذر</div>
+                            <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-center font-black text-green-700">متزن</div>
+                            <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-center font-black text-green-700">ناقد</div>
+                            <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-center font-black text-green-700">يقظ</div>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="p-6 bg-slate-50 rounded-3xl">
+                                <button onclick="toggleAccordion('acc-aylam')" class="w-full text-right font-black text-xl flex justify-between items-center">إطار عيلم X حجا <i data-lucide="zap"></i></button>
+                                <div id="acc-aylam" class="hidden mt-6 text-slate-600">
+                                    <p class="mb-4">مشاهدة فيلم <b>Fire Heart</b> ومناقشة: كيف برزت شخصية عيلم (العالم الشرير)؟ وما هي عوامل تشكيلها والوقاية منها؟</p>
+                                </div>
+                            </div>
+                            <div class="p-6 bg-slate-50 rounded-3xl border-2 border-orange-200">
+                                <button onclick="toggleAccordion('acc-cage')" class="w-full text-right font-black text-xl flex justify-between items-center text-orange-700">لغز محاصر في قفص التميز <i data-lucide="lock"></i></button>
+                                <div id="acc-cage" class="hidden mt-8">
+                                    <div class="bg-white p-8 rounded-3xl shadow-inner text-center">
+                                        <div class="flex justify-between items-center mb-6">
+                                            <div class="text-right">
+                                                <p class="text-xs font-black text-slate-400">النقاط المرصودة</p>
+                                                <p class="text-2xl font-black text-orange-600" id="cage-score">100</p>
+                                            </div>
+                                            <div class="text-center bg-slate-900 text-white px-6 py-2 rounded-2xl">
+                                                <p class="text-[10px] opacity-50">الوقت المتبقي</p>
+                                                <p class="text-xl font-mono" id="cage-timer">05:00</p>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm font-bold text-slate-500 mb-6">اكتشف 6 رموز خلف الأقفاص لتخمين اسم "العالم العربي":</p>
+                                        <div class="cage-grid mb-8 max-w-xs mx-auto">
+                                            <div class="cage-box" onclick="revealCage(this, '🍎')"><i data-lucide="help-circle"></i></div>
+                                            <div class="cage-box" onclick="revealCage(this, '🐝')"><i data-lucide="help-circle"></i></div>
+                                            <div class="cage-box" onclick="revealCage(this, '📚')"><i data-lucide="help-circle"></i></div>
+                                            <div class="cage-box" onclick="revealCage(this, 'ض')"><i data-lucide="help-circle"></i></div>
+                                            <div class="cage-box" onclick="revealCage(this, 'حتى')"><i data-lucide="help-circle"></i></div>
+                                            <div class="cage-box" onclick="revealCage(this, '📍')"><i data-lucide="help-circle"></i></div>
+                                        </div>
+                                        <div class="space-y-4">
+                                            <button id="hint-btn" onclick="getHint()" class="text-orange-600 font-black text-xs underline">طلب تلميح إضافي (خصم 50%)</button>
+                                            <input type="text" id="cage-answer" placeholder="اكتب اسم العالم هنا..." class="w-full p-4 border-2 border-slate-100 rounded-2xl text-center font-black text-lg outline-none focus:border-orange-500">
+                                            <button onclick="checkCageAnswer()" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-black text-lg hover:bg-black transition-all">تحقق من الإجابة</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                startCageGame();
+            } else if (type === 'elements') {
+                detail.innerHTML = `
+                    <div class="bg-white p-10 rounded-[40px] shadow-sm border">
+                        <h3 class="text-3xl font-black text-orange-800 mb-8">العناصر التحفيزية في العوالم الغامرة</h3>
+                        <div class="space-y-6">
+                            <div class="p-6 bg-orange-50 rounded-3xl border-r-4 border-orange-500">
+                                <h4 class="font-black text-orange-900 mb-2">مصرف حجا الابتكاري</h4>
+                                <p class="text-sm text-orange-800">منصة رقمية تمكن اللاعبين من الاطلاع على القوانين، التعريف بحجا، طباعة السندات، وسحب العملات والكروت.</p>
+                            </div>
+                            <div class="p-6 bg-blue-50 rounded-3xl border-r-4 border-blue-500">
+                                <h4 class="font-black text-blue-900 mb-2">عملات حجا التحفيزية</h4>
+                                <p class="text-sm text-blue-800">نقاط تحفيز مرصودة للتحديات يجمعها اللاعبون لكسر الودائع الابتكارية.</p>
+                            </div>
+                            <div class="p-6 bg-purple-50 rounded-3xl border-r-4 border-purple-500">
+                                <h4 class="font-black text-purple-900 mb-2">الودائع الابتكارية</h4>
+                                <p class="text-sm text-purple-800">أدوات ابتكار فريدة يمكن كسرها واستعمالها نظير عملات محددة بحسب استحقاق الأداة.</p>
+                            </div>
+                            <div class="p-6 bg-green-50 rounded-3xl border-r-4 border-green-500">
+                                <h4 class="font-black text-green-900 mb-2">صندوق الابتكار الائتماني للأفراد</h4>
+                                <p class="text-sm text-green-800">صندوق كرتوني مخصص لكل لاعب يجمع فيه أدواته وابتكاراته لينجز البرنامج بحصيلة من النماذج الأولية.</p>
+                            </div>
+                            <div class="p-6 bg-yellow-50 rounded-3xl border-r-4 border-yellow-500">
+                                <h4 class="font-black text-yellow-900 mb-2">نظارة العيون الفرناسية AR</h4>
+                                <p class="text-sm text-yellow-800">أداة رقمية تحفز استلهام الحلول الابتكارية من الطبيعة المحيطة بنا.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            lucide.createIcons();
+        }
+
+        function startCageGame() {
+            clearInterval(timerInterval);
+            timeLeft = 300;
+            currentScore = 100;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("انتهى الوقت!");
+                }
+                updateCageUI();
+            }, 1000);
+        }
+
+        function updateCageUI() {
+            const min = Math.floor(timeLeft / 60);
+            const sec = timeLeft % 60;
+            const timerEl = document.getElementById('cage-timer');
+            if (timerEl) timerEl.innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+            const scoreEl = document.getElementById('cage-score');
+            if (scoreEl) scoreEl.innerText = currentScore;
+        }
+
+        function revealCage(el, symbol) {
+            if (el.classList.contains('revealed')) return;
+            el.classList.add('revealed');
+            el.innerText = symbol;
+        }
+
+        function getHint() {
+            if (currentScore <= 50) return;
+            currentScore = 50;
+            document.getElementById('hint-btn').innerText = "تلميح: عالم لغوي بصري من البصرة";
+            updateCageUI();
+        }
+
+        function checkCageAnswer() {
+            const ans = document.getElementById('cage-answer').value.trim();
+            if (ans === 'سيبويه') {
+                clearInterval(timerInterval);
+                alert(`إجابة صحيحة! لقد ربحت ${currentScore} عملة حجا!`);
+            } else {
+                alert("إجابة خاطئة، حاول قراءة الرموز مرة أخرى.");
+            }
+        }
+
+        function toggleAccordion(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        function backToGuideIntro() {
+            document.getElementById('guide-intro').classList.remove('hidden');
+            document.getElementById('guide-content').classList.add('hidden');
+            clearInterval(timerInterval);
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            if (id === 'cards-modal') shuffleCards();
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+            clearInterval(timerInterval);
+        }
+
+        function playAudio(src) {
+            const audio = new Audio(src);
+            audio.play().catch(() => {
+                console.warn("Audio not found: " + src);
+                alert("يرجى التأكد من رفع ملفات الصوت بنفس الاسم.");
+            });
+        }
+    </script>
+</body>
+</html>
